@@ -48,6 +48,9 @@ function updateCarousel() {
   itemsPerView = getItemsPerView();
   itemWidth = scrollContainer.clientWidth / itemsPerView;
   items.forEach((item) => (item.style.width = `${itemWidth}px`));
+  
+  // Add padding to hide partial item on the left
+  scrollContainer.style.paddingLeft = `${itemWidth}px`;
 }
 
 function checkAndLoop() {
