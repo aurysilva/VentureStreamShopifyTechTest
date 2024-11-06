@@ -1,124 +1,117 @@
 const scrollContainer = document.getElementById("scrollContainer");
 
 let currentIndex = 0;
-let autoplayInterval;
 let itemsPerView = getItemsPerView();
 let itemWidth;
 let isDragging = false;
-let startX;
-let scrollLeft;
+let startPos = 0;
+let currentTranslate = 0;
+let prevTranslate = 0;
+let animationID;
 
 let items = Array.from(document.querySelectorAll('.carousel-item'));
 const originalItems = [...items];
 
-// Cloning for Infinite Scroll Effect at both ends
+// Cloning for Infinite Scroll Effect
 function addInfiniteScroll() {
-  originalItems.slice(-itemsPerView).forEach((item) => {
-    const clone = item.cloneNode(true);
-    scrollContainer.insertBefore(clone, scrollContainer.firstChild);
-  });
-
   originalItems.forEach((item) => {
     const clone = item.cloneNode(true);
     scrollContainer.appendChild(clone);
   });
-
-  items = Array.from(scrollContainer.children);
+  items = Array.from(scrollContainer.children); // Update items array with new clones
   updateCarousel();
-  scrollContainer.scrollLeft = itemsPerView * itemWidth;
 }
 
+// Adjust items per view based on screen size
 function getItemsPerView() {
-  if (window.innerWidth >= 1420) return 4;
+  if (window.innerWidth >= 1200) return 4;
   if (window.innerWidth >= 900) return 3;
   if (window.innerWidth >= 600) return 2;
   return 1;
 }
 
+// Update carousel layout on resize
 function updateCarousel() {
   itemsPerView = getItemsPerView();
   itemWidth = scrollContainer.clientWidth / itemsPerView;
   items.forEach((item) => (item.style.width = `${itemWidth}px`));
-  scrollContainer.scrollLeft = (currentIndex + itemsPerView) * itemWidth;
+  scrollContainer.scrollLeft = currentIndex * itemWidth;
 }
 
-function scrollToIndex(index, smooth = true) {
-  const scrollOptions = {
-    left: (index + itemsPerView) * itemWidth,
-    behavior: smooth ? 'smooth' : 'auto',
-  };
-  scrollContainer.scrollTo(scrollOptions);
-
-  if (index >= originalItems.length) {
-    currentIndex = 0;
-    scrollContainer.scrollLeft = itemsPerView * itemWidth;
-  } else if (index < 0) {
-    currentIndex = originalItems.length - 1;
-    scrollContainer.scrollLeft = (currentIndex + itemsPerView) * itemWidth;
-  }
+// Snapping to the nearest item
+function snapToItem() {
+  const scrollPosition = scrollContainer.scrollLeft;
+  const newIndex = Math.round(scrollPosition / itemWidth);
+  currentIndex = newIndex % originalItems.length;
+  scrollContainer.scrollTo({ left: currentIndex * itemWidth, behavior: 'smooth' });
 }
 
-function startAutoplay() {
-  autoplayInterval = setInterval(() => {
-    moveToNext();
-  }, 3000);
-}
-
-function stopAutoplay() {
-  clearInterval(autoplayInterval);
-}
-
-// Attach event listeners to each carousel item for click-and-drag functionality
-items.forEach((item) => {
-  item.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    startX = e.pageX - scrollContainer.offsetLeft;
-    scrollLeft = scrollContainer.scrollLeft;
-    stopAutoplay();
-  });
+// Dragging functionality
+scrollContainer.addEventListener("mousedown", (e) => {
+  isDragging = true;
+  startPos = e.pageX - scrollContainer.offsetLeft;
+  prevTranslate = scrollContainer.scrollLeft;
+  animationID = requestAnimationFrame(animation);
 });
 
-// Stop dragging when the mouse button is released
-document.addEventListener('mouseup', () => {
+scrollContainer.addEventListener("mousemove", (e) => {
+  if (isDragging) {
+    const currentPosition = e.pageX - scrollContainer.offsetLeft;
+    const distance = startPos - currentPosition;
+    scrollContainer.scrollLeft = prevTranslate + distance;
+  }
+});
+
+scrollContainer.addEventListener("mouseup", () => {
+  isDragging = false;
+  cancelAnimationFrame(animationID);
+  snapToItem();
+});
+
+scrollContainer.addEventListener("mouseleave", () => {
   if (isDragging) {
     isDragging = false;
-    snapToNearest();
-    startAutoplay();
+    cancelAnimationFrame(animationID);
+    snapToItem();
   }
 });
 
-// Stop dragging if the mouse leaves the scroll container
-scrollContainer.addEventListener('mouseleave', () => {
-  if (isDragging) {
-    isDragging = false;
-    snapToNearest();
-    startAutoplay();
-  }
-});
-
-// Drag functionality when the mouse moves
-document.addEventListener('mousemove', (e) => {
-  if (!isDragging) return;
+// Prevents default image dragging behavior
+scrollContainer.addEventListener("dragstart", (e) => {
   e.preventDefault();
-  const x = e.pageX - scrollContainer.offsetLeft;
-  const walk = (x - startX); // Adjust to scroll left or right only
-  scrollContainer.scrollLeft = scrollLeft - walk;
 });
 
-// Snap effect to the nearest item
-function snapToNearest() {
-  const closestIndex = Math.round(scrollContainer.scrollLeft / itemWidth) - itemsPerView;
-  currentIndex = (closestIndex + originalItems.length) % originalItems.length;
-  scrollToIndex(currentIndex);
-}
-
-// Event Listeners
-window.addEventListener('resize', () => {
-  updateCarousel();
-  scrollToIndex(currentIndex, false);
+// Mobile touch events
+scrollContainer.addEventListener("touchstart", (e) => {
+  isDragging = true;
+  startPos = e.touches[0].clientX - scrollContainer.offsetLeft;
+  prevTranslate = scrollContainer.scrollLeft;
+  animationID = requestAnimationFrame(animation);
 });
+
+scrollContainer.addEventListener("touchmove", (e) => {
+  if (isDragging) {
+    const currentPosition = e.touches[0].clientX - scrollContainer.offsetLeft;
+    const distance = startPos - currentPosition;
+    scrollContainer.scrollLeft = prevTranslate + distance;
+  }
+});
+
+scrollContainer.addEventListener("touchend", () => {
+  isDragging = false;
+  cancelAnimationFrame(animationID);
+  snapToItem();
+});
+
+window.addEventListener('resize', updateCarousel);
 
 // Initial setup
 addInfiniteScroll();
 updateCarousel();
-startAutoplay();
+
+// Animation function to enable smoother dragging
+function animation() {
+  if (isDragging) {
+    requestAnimationFrame(animation);
+  }
+}
