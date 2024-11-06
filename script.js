@@ -24,8 +24,9 @@ function addInfiniteScroll() {
 
 // Adjust items per view based on screen size
 function getItemsPerView() {
-  if (window.innerWidth >= 1200) return 4;
-  if (window.innerWidth >= 900) return 3;
+  if (window.innerWidth >= 1420) return 5;
+  if (window.innerWidth >= 1280) return 4;
+  if (window.innerWidth >= 920) return 3;
   if (window.innerWidth >= 600) return 2;
   return 1;
 }
