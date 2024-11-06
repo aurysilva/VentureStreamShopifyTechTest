@@ -3,56 +3,85 @@ const nextBtn = document.getElementById("nextBtn");
 const prevBtn = document.getElementById("prevBtn");
 const dotsContainer = document.getElementById("dotsContainer");
 
-let isDown = false;
-let startX;
-let scrollLeft;
-let autoplayInterval;
 let currentIndex = 0;
+let autoplayInterval;
+let itemsPerView = getItemsPerView();
+let itemWidth;
+
 const items = Array.from(document.querySelectorAll('.carousel-item'));
 const totalItems = items.length;
 
-// Responsive breakpoints
-const breakpoints = {
-  0: 1,
-  600: 2,
-  900: 3,
-  1200: 4,
-};
-
-function getVisibleItems() {
-  const screenWidth = window.innerWidth;
-  let itemsToShow = 1;
-
-  for (const [breakpoint, items] of Object.entries(breakpoints)) {
-    if (screenWidth >= breakpoint) {
-      itemsToShow = items;
-    }
-  }
-
-  return itemsToShow;
+function getItemsPerView() {
+  if (window.innerWidth >= 1200) return 4; // Large screens
+  if (window.innerWidth >= 900) return 3; // Medium screens
+  if (window.innerWidth >= 600) return 2; // Small screens
+  return 1; // Extra small screens
 }
 
-let visibleItems = getVisibleItems();
-let itemWidth = scrollContainer.clientWidth / visibleItems;
+// Update carousel layout on resize
+function updateCarousel() {
+  itemsPerView = getItemsPerView();
+  itemWidth = scrollContainer.clientWidth / itemsPerView;
+  scrollContainer.style.scrollSnapType = "x mandatory";
+  scrollToIndex(currentIndex, false); // Reset scroll to current item
+}
 
-window.addEventListener('resize', () => {
-  visibleItems = getVisibleItems();
-  itemWidth = scrollContainer.clientWidth / visibleItems;
-  adjustScrollPosition();
-});
+// Smooth scroll function with animation for each item
+function scrollToIndex(index, smooth = true) {
+  const scrollOptions = {
+    left: index * itemWidth,
+    behavior: smooth ? 'smooth' : 'auto'
+  };
+  scrollContainer.scrollTo(scrollOptions);
+  updateVisibleItems();
+}
 
-// Cloning for Infinite Loop
-items.forEach(item => {
-  const cloneBefore = item.cloneNode(true);
-  const cloneAfter = item.cloneNode(true);
-  scrollContainer.insertBefore(cloneBefore, scrollContainer.firstChild);
-  scrollContainer.appendChild(cloneAfter);
-});
+// Navigation functionality
+function moveToNext() {
+  currentIndex = (currentIndex + 1) % totalItems;
+  scrollToIndex(currentIndex);
+  updateDots();
+}
 
-// Adjust initial scroll to the "real" first item
-scrollContainer.scrollLeft = scrollContainer.scrollWidth / 3;
+function moveToPrev() {
+  currentIndex = (currentIndex - 1 + totalItems) % totalItems;
+  scrollToIndex(currentIndex);
+  updateDots();
+}
 
-// Autoplay Functionality
+// Update visible items to add "active" class
+function updateVisibleItems() {
+  items.forEach((item, index) => {
+    item.classList.remove('active');
+    if (index >= currentIndex && index < currentIndex + itemsPerView) {
+      item.classList.add('active');
+    }
+  });
+}
+
+// Dots functionality
+function createDots() {
+  dotsContainer.innerHTML = '';
+  for (let i = 0; i < totalItems; i++) {
+    const dot = document.createElement('div');
+    dot.classList.add('dot');
+    dot.addEventListener('click', () => {
+      currentIndex = i;
+      scrollToIndex(currentIndex);
+      updateDots();
+    });
+    dotsContainer.appendChild(dot);
+  }
+  updateDots();
+}
+
+function updateDots() {
+  Array.from(dotsContainer.children).forEach((dot, index) => {
+    dot.classList.toggle('active', index === currentIndex);
+  });
+}
+
+// Autoplay functionality
 function startAutoplay() {
   autoplayInterval = setInterval(() => {
     moveToNext();
@@ -63,85 +92,7 @@ function stopAutoplay() {
   clearInterval(autoplayInterval);
 }
 
-function moveToNext() {
-  if (currentIndex >= totalItems - visibleItems) {
-    scrollContainer.scrollLeft = scrollContainer.scrollWidth / 3;
-    currentIndex = 0;
-  } else {
-    currentIndex++;
-    scrollContainer.scrollLeft += itemWidth;
-  }
-  updateDots();
-}
-
-function moveToPrev() {
-  if (currentIndex <= 0) {
-    scrollContainer.scrollLeft = scrollContainer.scrollWidth / 3 - itemWidth * totalItems;
-    currentIndex = totalItems - visibleItems;
-  } else {
-    currentIndex--;
-    scrollContainer.scrollLeft -= itemWidth;
-  }
-  updateDots();
-}
-
-function adjustScrollPosition() {
-  scrollContainer.scrollLeft = currentIndex * itemWidth;
-}
-
-function createDots() {
-  for (let i = 0; i < totalItems; i++) {
-    const dot = document.createElement('div');
-    dot.classList = 'dot w-3 h-3 bg-gray-400 rounded-full';
-    dot.addEventListener('click', () => scrollToIndex(i));
-    dotsContainer.appendChild(dot);
-  }
-  updateDots();
-}
-
-function updateDots() {
-  Array.from(dotsContainer.children).forEach((dot, index) => {
-    dot.classList.toggle('bg-gray-700', index === currentIndex);
-  });
-}
-
-function scrollToIndex(index) {
-  stopAutoplay();
-  currentIndex = index;
-  scrollContainer.scrollLeft = (scrollContainer.scrollWidth / 3) + index * itemWidth;
-  updateDots();
-  startAutoplay();
-}
-
-// Draggable Scroll
-scrollContainer.addEventListener("mousedown", (e) => {
-  isDown = true;
-  scrollContainer.classList.add("cursor-grabbing");
-  startX = e.pageX - scrollContainer.offsetLeft;
-  scrollLeft = scrollContainer.scrollLeft;
-  stopAutoplay();
-});
-
-scrollContainer.addEventListener("mouseleave", () => {
-  isDown = false;
-  scrollContainer.classList.remove("cursor-grabbing");
-  startAutoplay();
-});
-
-scrollContainer.addEventListener("mouseup", () => {
-  isDown = false;
-  scrollContainer.classList.remove("cursor-grabbing");
-  startAutoplay();
-});
-
-scrollContainer.addEventListener("mousemove", (e) => {
-  if (!isDown) return;
-  e.preventDefault();
-  const x = e.pageX - scrollContainer.offsetLeft;
-  const walk = (x - startX) * 1.5;
-  scrollContainer.scrollLeft = scrollLeft - walk;
-});
-
+// Event Listeners
 nextBtn.addEventListener("click", () => {
   stopAutoplay();
   moveToNext();
@@ -154,5 +105,10 @@ prevBtn.addEventListener("click", () => {
   startAutoplay();
 });
 
+window.addEventListener('resize', updateCarousel);
+
+// Initial setup
 createDots();
+updateCarousel();
+updateVisibleItems();
 startAutoplay();
