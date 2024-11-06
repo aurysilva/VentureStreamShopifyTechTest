@@ -8,9 +8,19 @@ let autoplayInterval;
 let itemsPerView = getItemsPerView();
 let itemWidth;
 
-const items = Array.from(document.querySelectorAll('.carousel-item'));
-const totalItems = items.length;
+let items = Array.from(document.querySelectorAll('.carousel-item'));
+const originalItems = [...items]; // Keep a reference to the original items
 
+// Cloning for Infinite Scroll Effect
+function addInfiniteScroll() {
+  items.forEach((item) => {
+    const clone = item.cloneNode(true);
+    scrollContainer.appendChild(clone);
+  });
+  updateCarousel();
+}
+
+// Adjust items per view based on screen size
 function getItemsPerView() {
   if (window.innerWidth >= 1200) return 4; // Large screens
   if (window.innerWidth >= 900) return 3; // Medium screens
@@ -23,10 +33,10 @@ function updateCarousel() {
   itemsPerView = getItemsPerView();
   itemWidth = scrollContainer.clientWidth / itemsPerView;
   scrollContainer.style.scrollSnapType = "x mandatory";
-  scrollToIndex(currentIndex, false); // Reset scroll to current item
+  scrollContainer.scrollLeft = currentIndex * itemWidth;
 }
 
-// Smooth scroll function with animation for each item
+// Smooth scroll function
 function scrollToIndex(index, smooth = true) {
   const scrollOptions = {
     left: index * itemWidth,
@@ -38,13 +48,28 @@ function scrollToIndex(index, smooth = true) {
 
 // Navigation functionality
 function moveToNext() {
-  currentIndex = (currentIndex + 1) % totalItems;
+  currentIndex++;
   scrollToIndex(currentIndex);
+
+  // Infinite loop: check if we've reached the end of the cloned items
+  if (currentIndex >= items.length - itemsPerView) {
+    // Append the original items again to maintain an infinite effect
+    originalItems.forEach((item) => {
+      const clone = item.cloneNode(true);
+      scrollContainer.appendChild(clone);
+      items.push(clone);
+    });
+  }
   updateDots();
 }
 
 function moveToPrev() {
-  currentIndex = (currentIndex - 1 + totalItems) % totalItems;
+  if (currentIndex > 0) {
+    currentIndex--;
+  } else {
+    currentIndex = items.length - itemsPerView;
+    scrollToIndex(currentIndex, false); // Instantly scroll back to last real item
+  }
   scrollToIndex(currentIndex);
   updateDots();
 }
@@ -62,7 +87,7 @@ function updateVisibleItems() {
 // Dots functionality
 function createDots() {
   dotsContainer.innerHTML = '';
-  for (let i = 0; i < totalItems; i++) {
+  for (let i = 0; i < originalItems.length; i++) {
     const dot = document.createElement('div');
     dot.classList.add('dot');
     dot.addEventListener('click', () => {
@@ -77,7 +102,7 @@ function createDots() {
 
 function updateDots() {
   Array.from(dotsContainer.children).forEach((dot, index) => {
-    dot.classList.toggle('active', index === currentIndex);
+    dot.classList.toggle('active', index === currentIndex % originalItems.length);
   });
 }
 
@@ -108,6 +133,7 @@ prevBtn.addEventListener("click", () => {
 window.addEventListener('resize', updateCarousel);
 
 // Initial setup
+addInfiniteScroll(); // Clone initial items to set up infinite scroll
 createDots();
 updateCarousel();
 updateVisibleItems();

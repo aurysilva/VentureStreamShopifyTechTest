@@ -22,17 +22,11 @@
       background-color: black;
     }
 
-    /* Transition for smooth item animation */
+    /* Carousel items animation for smoother effect */
     .carousel-item {
       transition: transform 0.5s ease, opacity 0.5s ease;
-      opacity: 0;
-      transform: translateX(50px);
-      /* Slide in from the right */
-    }
-
-    .carousel-item.active {
-      transform: translateX(0);
       opacity: 1;
+      transform: translateX(0);
     }
   </style>
 </head>
@@ -42,8 +36,8 @@
   <section class="w-full max-w-5xl px-4 relative">
     <h2 class="text-2xl font-bold mb-4">Carousel</h2>
 
-    <!-- Carousel Container -->
-    <div id="scrollContainer" class="flex space-x-4 overflow-x-hidden scroll-smooth relative cursor-grab">
+    <!-- Carousel Container with no-wrap for infinite cloning effect -->
+    <div id="scrollContainer" class="flex flex-nowrap space-x-4 overflow-x-hidden relative cursor-grab">
       <div class="carousel-item w-1/4 h-72 bg-gray-200 rounded-lg flex-shrink-0">Item 1</div>
       <div class="carousel-item w-1/4 h-72 bg-gray-200 rounded-lg flex-shrink-0">Item 2</div>
       <div class="carousel-item w-1/4 h-72 bg-gray-200 rounded-lg flex-shrink-0">Item 3</div>
@@ -56,9 +50,9 @@
 
     <!-- Navigation Arrows -->
     <button id="prevBtn"
-      class="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-300 rounded-full">◄</button>
+      class="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-300 rounded-full hover:bg-gray-400 transition-colors duration-300">◄</button>
     <button id="nextBtn"
-      class="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-300 rounded-full">►</button>
+      class="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-300 rounded-full hover:bg-gray-400 transition-colors duration-300">►</button>
 
     <!-- Dots for navigation -->
     <div id="dotsContainer" class="flex justify-center mt-4 space-x-2"></div>
