@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,57 +7,156 @@
   <script src="script.js" defer></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
-    /* Additional styling for dots */
-    .dot {
-      width: 10px;
-      height: 10px;
-      background-color: gray;
-      border-radius: 50%;
-      margin: 0 5px;
-      cursor: pointer;
-    }
-
-    .dot.active {
-      background-color: black;
-    }
-
     /* Carousel items animation for smoother effect */
     .carousel-item {
-      transition: transform 0.5s ease, opacity 0.5s ease;
+      transition: transform 0.3s ease-in-out;
       opacity: 1;
       transform: translateX(0);
     }
+
+    /* Scale image on hover */
+    .carousel-item:hover {
+      transform: scale(1.04);
+    }
+
+    /* Transition effect for arrow opacity */
+    .arrow {
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    /* Show arrow on hover */
+    .carousel-item:hover .arrow {
+      opacity: 1;
+    }
+
+    .max-custom-w {
+      padding-left: 2rem;
+    }
+
+    @media only screen and (min-width: 1580.1px) {
+      .max-custom-w {
+        max-width: 1778px;
+      } 
+    }
+
+    @media only screen and (max-width: 1580px) {
+      .max-custom-w {
+        max-width: 1420px;
+        padding-left: 0;
+      } 
+    }
   </style>
 </head>
+<body class="bg-white">
 
-<body class="bg-gray-100 flex justify-center items-center h-screen">
-
-  <section class="w-full max-w-5xl px-4 relative">
-    <h2 class="text-2xl font-bold mb-4">Carousel</h2>
-
+<div class="flex justify-center items-center h-screen">
+  <section class="w-full flex md:justify-end relative">
     <!-- Carousel Container with no-wrap for infinite cloning effect -->
-    <div id="scrollContainer" class="flex flex-nowrap space-x-4 overflow-x-hidden relative cursor-grab">
-      <div class="carousel-item w-1/4 h-72 bg-gray-200 rounded-lg flex-shrink-0">Item 1</div>
-      <div class="carousel-item w-1/4 h-72 bg-gray-200 rounded-lg flex-shrink-0">Item 2</div>
-      <div class="carousel-item w-1/4 h-72 bg-gray-200 rounded-lg flex-shrink-0">Item 3</div>
-      <div class="carousel-item w-1/4 h-72 bg-gray-200 rounded-lg flex-shrink-0">Item 4</div>
-      <div class="carousel-item w-1/4 h-72 bg-gray-200 rounded-lg flex-shrink-0">Item 5</div>
-      <div class="carousel-item w-1/4 h-72 bg-gray-200 rounded-lg flex-shrink-0">Item 6</div>
-      <div class="carousel-item w-1/4 h-72 bg-gray-200 rounded-lg flex-shrink-0">Item 7</div>
-      <div class="carousel-item w-1/4 h-72 bg-gray-200 rounded-lg flex-shrink-0">Item 8</div>
+    <div class="w-full p-4 lg:p-0 max-custom-w">
+      <h2 class="text-2xl font-bold mb-4">Section Title</h2>
+      <div id="scrollContainer" class="flex flex-nowrap overflow-x-hidden relative py-5 space-x-8">
+
+      
+
+        <!-- Carousel item -->
+        <div class="carousel-item flex-shrink-0">
+          <a class="flex flex-col gap-3" href="#">
+            <img src="./images/jacket.png" alt="Product Image" class="w-full">
+            <div class="arrow w-12 h-12 bg-white rounded-full flex items-center justify-center absolute bottom-12 right-12 text-gray-500 text-lg">
+              &rarr;
+            </div>
+            <h3 class="text-gray-800 font-semibold">Title first</h3>
+          </a>
+        </div>
+
+        <!-- Additional Carousel items -->
+        <div class="carousel-item flex-shrink-0">
+          <a class="flex flex-col gap-3" href="#">
+            <img src="./images/jacket.png" alt="Product Image" class="w-full">
+            <div class="arrow w-12 h-12 bg-white rounded-full flex items-center justify-center absolute bottom-12 right-12 text-gray-500 text-lg">
+              &rarr;
+            </div>
+            <h3 class="text-gray-800 font-semibold">Title</h3>
+          </a>
+        </div>
+
+        <div class="carousel-item flex-shrink-0">
+          <a class="flex flex-col gap-3" href="#">
+            <img src="./images/jacket.png" alt="Product Image" class="w-full">
+            <div class="arrow w-12 h-12 bg-white rounded-full flex items-center justify-center absolute bottom-12 right-12 text-gray-500 text-lg">
+              &rarr;
+            </div>
+            <h3 class="text-gray-800 font-semibold">Title</h3>
+          </a>
+        </div>
+
+        <div class="carousel-item flex-shrink-0">
+          <a class="flex flex-col gap-3" href="#">
+            <img src="./images/jacket.png" alt="Product Image" class="w-full">
+            <div class="arrow w-12 h-12 bg-white rounded-full flex items-center justify-center absolute bottom-12 right-12 text-gray-500 text-lg">
+              &rarr;
+            </div>
+            <h3 class="text-gray-800 font-semibold">Title</h3>
+          </a>
+        </div>
+
+        <div class="carousel-item flex-shrink-0">
+          <a class="flex flex-col gap-3" href="#">
+            <img src="./images/jacket.png" alt="Product Image" class="w-full">
+            <div class="arrow w-12 h-12 bg-white rounded-full flex items-center justify-center absolute bottom-12 right-12 text-gray-500 text-lg">
+              &rarr;
+            </div>
+            <h3 class="text-gray-800 font-semibold">Title</h3>
+          </a>
+        </div>
+
+        <div class="carousel-item flex-shrink-0">
+          <a class="flex flex-col gap-3" href="#">
+            <img src="./images/jacket.png" alt="Product Image" class="w-full">
+            <div class="arrow w-12 h-12 bg-white rounded-full flex items-center justify-center absolute bottom-12 right-12 text-gray-500 text-lg">
+              &rarr;
+            </div>
+            <h3 class="text-gray-800 font-semibold">Title</h3>
+          </a>
+        </div>
+
+        <div class="carousel-item flex-shrink-0">
+          <a class="flex flex-col gap-3" href="#">
+            <img src="./images/jacket.png" alt="Product Image" class="w-full">
+            <div class="arrow w-12 h-12 bg-white rounded-full flex items-center justify-center absolute bottom-12 right-12 text-gray-500 text-lg">
+              &rarr;
+            </div>
+            <h3 class="text-gray-800 font-semibold">Title</h3>
+          </a>
+        </div>
+
+        <div class="carousel-item flex-shrink-0">
+          <a class="flex flex-col gap-3" href="#">
+            <img src="./images/jacket.png" alt="Product Image" class="w-full">
+            <div class="arrow w-12 h-12 bg-white rounded-full flex items-center justify-center absolute bottom-12 right-12 text-gray-500 text-lg">
+              &rarr;
+            </div>
+            <h3 class="text-gray-800 font-semibold">Title</h3>
+          </a>
+        </div>
+
+        <div class="carousel-item flex-shrink-0">
+          <a class="flex flex-col gap-3" href="#">
+            <img src="./images/jacket.png" alt="Product Image" class="w-full">
+            <div class="arrow w-12 h-12 bg-white rounded-full flex items-center justify-center absolute bottom-12 right-12 text-gray-500 text-lg">
+              &rarr;
+            </div>
+            <h3 class="text-gray-800 font-semibold">Title Last</h3>
+          </a>
+        </div>
+
+
+      
+      </div>
     </div>
-
-    <!-- Navigation Arrows -->
-    <button id="prevBtn"
-      class="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-300 rounded-full hover:bg-gray-400 transition-colors duration-300">◄</button>
-    <button id="nextBtn"
-      class="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-300 rounded-full hover:bg-gray-400 transition-colors duration-300">►</button>
-
-    <!-- Dots for navigation -->
-    <div id="dotsContainer" class="flex justify-center mt-4 space-x-2"></div>
-
   </section>
+</div>
 
 </body>
-
 </html>
