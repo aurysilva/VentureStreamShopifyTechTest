@@ -1,0 +1,39 @@
+ /* Carousel items animation for smoother effect */
+ .carousel-item {
+   transition: transform 0.3s ease-in-out;
+   opacity: 1;
+   transform: translateX(0);
+ }
+
+ /* Scale image on hover */
+ .carousel-item:hover {
+   transform: scale(1.04);
+ }
+
+ /* Transition effect for arrow opacity */
+ .arrow {
+   opacity: 0;
+   transition: opacity 0.3s ease;
+ }
+
+ /* Show arrow on hover */
+ .carousel-item:hover .arrow {
+   opacity: 1;
+ }
+
+ .max-custom-w {
+   padding-left: 2rem;
+ }
+
+ @media only screen and (min-width: 1580.1px) {
+   .max-custom-w {
+     max-width: 1778px;
+   }
+ }
+
+ @media only screen and (max-width: 1580px) {
+   .max-custom-w {
+     max-width: 1420px;
+     padding-left: 0;
+   }
+ }
